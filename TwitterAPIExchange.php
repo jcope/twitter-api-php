@@ -97,7 +97,39 @@ class TwitterAPIExchange
         
         return $this;
     }
-    
+    /**
+     * Set getfield, via array, example: array('screen_name' => 'J7mbo')
+     * 
+     * @param array $array Array of parameters to send to API
+     * 
+     * @return \TwitterAPIExchange Instance of self for method chaining
+     */
+    public function setGetfields(array $array)
+    {
+        if (!is_null($this->getPostfields())) 
+        { 
+            throw new Exception('You can only choose get OR post fields.'); 
+        }
+		//Start with a string we will populate with data from the array
+        $getString = "?";
+
+		//Setup the replacement criteria
+        $search = array('#', ',', '+', ':');
+        $replace = array('%23', '%2C', '%2B', '%3A');
+		
+		//Cycle through the array and append each key/value pair
+		foreach($array as $key => $value){
+			//String Replace the Value
+			$parsedValue = str_replace($search, $replace, $value);
+			//Append Key/Value to Get String
+			$getString = $getString.$key.'='.$parsedValue.'&'; 
+		}
+		//Remove the trailing '&' and apply to the getField
+        $this->getfield = substr($getString,0,-1);;
+		
+		//Return self for method chaining
+        return $this;
+    }
     /**
      * Get getfield string (simple getter)
      * 
